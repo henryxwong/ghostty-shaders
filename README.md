@@ -4,10 +4,11 @@ A collection of GLSL shaders I use with [Ghostty](https://github.com/ghostty-org
 
 ## Shaders
 
-| Shader | Description |
-|--------|-------------|
-| [inside-the-matrix.glsl](inside-the-matrix.glsl) | The original, unmodified Matrix-style shader. |
-| [inside-the-matrix-optimized.glsl](inside-the-matrix-optimized.glsl) | Optimized version with reduced GPU usage. |
+| Shader | Description | Screenshot |
+|--------|-------------|------------|
+| [inside-the-matrix.glsl](inside-the-matrix.glsl) | The original, unmodified Matrix-style shader. | — |
+| [inside-the-matrix-optimized.glsl](inside-the-matrix-optimized.glsl) | Optimized version with reduced GPU usage. | ![inside-the-matrix-optimized](inside-the-matrix-optimized.png) |
+| [gargantua.glsl](gargantua.glsl) | Gargantua-inspired black hole shader. | ![gargantua](gargantua.png) |
 
 ## Installation
 
