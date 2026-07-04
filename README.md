@@ -9,6 +9,7 @@ A collection of GLSL shaders I use with [Ghostty](https://github.com/ghostty-org
 | [inside-the-matrix.glsl](inside-the-matrix.glsl) | The original, unmodified Matrix-style shader. | — |
 | [inside-the-matrix-optimized.glsl](inside-the-matrix-optimized.glsl) | Optimized version with reduced GPU usage. | ![inside-the-matrix-optimized](inside-the-matrix-optimized.png) |
 | [gargantua.glsl](gargantua.glsl) | Gargantua-inspired black hole shader. | ![gargantua](gargantua.png) |
+| [hermes-caduceus.glsl](hermes-caduceus.glsl) | Animated caduceus with heaven light rays and cursor glow. Warm gold tones. | ![hermes-caduceus](hermes-caduceus.png) |
 
 ## Installation
 
