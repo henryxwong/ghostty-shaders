@@ -8,8 +8,12 @@
 const float CADUCEUS_OPACITY = 0.115;
 const float CURSOR_WING      = 0.33;
 
+// Horizontal center of the caduceus staff (measured from left to right).
+// Default 4/5 — the staff sits on the far-right of the screen.
+const float CADUCEUS_CENTER_X = 0.8;
+
 float caduceus(vec2 uv, float t) {
-    vec2 p = uv - vec2(0.5, 0.515);
+    vec2 p = uv - vec2(CADUCEUS_CENTER_X, 0.515);
     p.x *= iResolution.x / iResolution.y;
 
     float d = 1e6;
@@ -36,7 +40,7 @@ float caduceus(vec2 uv, float t) {
 
 // Two-snake glow: layered pass with wider soft falloff for a luminous aura.
 float caduceusGlow(vec2 uv, float t) {
-    vec2 p = uv - vec2(0.5, 0.515);
+    vec2 p = uv - vec2(CADUCEUS_CENTER_X, 0.515);
     p.x *= iResolution.x / iResolution.y;
 
     float d = 1e6;
@@ -65,7 +69,7 @@ float caduceusGlow(vec2 uv, float t) {
 
 float heavenLight(vec2 uv, float t) {
     float y = uv.y;
-    float cx = 0.5 + sin(t * 0.12) * 0.028;
+    float cx = CADUCEUS_CENTER_X + sin(t * 0.12) * 0.028;
     float dist = length(vec2((uv.x - cx) * 1.15, y * 0.62));
     // Bright core with wide spread for an obvious light pool from above
     float core = exp(-dist * 2.5) * 0.38;
