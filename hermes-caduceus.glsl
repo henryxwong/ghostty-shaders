@@ -1,6 +1,9 @@
 // Hermes Caduceus
 // Subtle animated caduceus with heaven light rays and cursor glow.
 // Warm gold tones. Focus-aware effects.
+//
+// CHANGELOG
+// 2026-07-05 — Added subtle golden glow to snakes; boosted heaven light vibrance.
 
 const float CADUCEUS_OPACITY = 0.115;
 const float CURSOR_WING      = 0.33;
@@ -31,20 +34,55 @@ float caduceus(vec2 uv, float t) {
     return smoothstep(0.0085, 0.0, d);
 }
 
+// Two-snake glow: layered pass with wider soft falloff for a luminous aura.
+float caduceusGlow(vec2 uv, float t) {
+    vec2 p = uv - vec2(0.5, 0.515);
+    p.x *= iResolution.x / iResolution.y;
+
+    float d = 1e6;
+
+    float basePhase = 2.0944;
+    float dynamicPhase = basePhase + sin(t * 0.55) * 0.75 + cos(t * 0.35) * 0.45;
+
+    float amp = 0.031;
+    float xOff = 0.015;
+    float freq = 10.8;
+    float spd = 0.36;
+
+    float s1 = abs((p.x - xOff) - amp * sin(p.y * freq + t * spd));
+    float s2 = abs((p.x + xOff) + amp * sin(p.y * freq + t * spd + dynamicPhase));
+
+    // Tight golden aura around each snake body
+    float glow1 = exp(-s1 * 35.0) * 0.25;
+    float glow2 = exp(-s2 * 35.0) * 0.25;
+
+    // Wide diffuse halo for soft outer glow
+    float halo1 = exp(-s1 * 12.0) * 0.1;
+    float halo2 = exp(-s2 * 12.0) * 0.1;
+
+    return (glow1 + glow2 + halo1 + halo2);
+}
+
 float heavenLight(vec2 uv, float t) {
     float y = uv.y;
     float cx = 0.5 + sin(t * 0.12) * 0.028;
     float dist = length(vec2((uv.x - cx) * 1.15, y * 0.62));
-    float core = exp(-dist * 4.0) * 0.18;
+    // Bright core with wide spread for an obvious light pool from above
+    float core = exp(-dist * 2.5) * 0.38;
 
+    // Three-layer ray pattern for rich, high-contrast light beams
     float ray1 = sin(uv.x * 19.0 + t * 0.65) * 0.5 + 0.5;
     float ray2 = sin(uv.x * 34.0 - t * 0.48) * 0.5 + 0.5;
-    float rays = ray1 * 0.6 + ray2 * 0.4;
+    float ray3 = sin(uv.x * 7.0 + t * 0.28) * 0.5 + 0.5;
+    float rays = ray1 * 0.45 + ray2 * 0.35 + ray3 * 0.20;
 
-    float falloff = smoothstep(0.88, 0.03, y);
-    float pulse = 0.68 + 0.32 * sin(t * 0.42);
+    // Gentle gradient fading light from top to bottom
+    float falloff = smoothstep(0.92, 0.0, y);
+    // Gentle breathing pulse — brighter peak, softer trough
+    float pulse = 0.72 + 0.28 * sin(t * 0.42);
 
-    return core * falloff * (0.55 + 0.45 * rays) * pulse;
+    // Rays dominate over base — high-contrast light beams
+    return core * falloff * (0.30 + 0.70 * rays) * pulse;
 }
 
 void mainImage(out vec4 fragColor, in vec2 fragCoord) {
@@ -54,6 +92,7 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     bool focused = (iFocus == 1);
     float t = iTime;
 
+    // Subtle warm tint when focused, cool tint otherwise
     vec3 col = term.rgb;
     if (focused) {
         col = mix(col, vec3(1.0, 0.965, 0.90), 0.028);
@@ -61,12 +100,22 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
         col *= vec3(1.012, 0.998, 0.975);
     }
 
+    // Base caduceus lines — thin gold core
     float cad = caduceus(uv, t) * CADUCEUS_OPACITY;
     if (!focused) cad *= 0.35;
+
+    // Subtle golden glow aura around the two snakes
+    float glow = caduceusGlow(uv, t);
+    if (!focused) glow *= 0.35;
 
     vec3 cadColor = vec3(1.0, 0.89, 0.52);
     vec3 bg = cadColor * cad;
 
+    // Additive glow layer — warm gold aura on top of core lines
+    vec3 glowCol = cadColor * glow;
+    bg += glowCol;
+
+    // Vibrant heaven light — bright core with prominent animated rays
     float hl = heavenLight(uv, t);
     if (!focused) hl *= 0.32;
     vec3 heavenCol = vec3(1.0, 0.945, 0.68) * hl;
